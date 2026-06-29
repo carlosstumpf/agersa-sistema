@@ -1,0 +1,68 @@
+================================================
+  AGERSA - Sistema de Extração Orçamentária
+  UG: 043500 | FlexVision SIAFE-RJ
+================================================
+
+ARQUIVOS DO SISTEMA:
+─────────────────────────────────────────────
+  agersa_sistema.py     → Extração automática do FlexVision
+  agersa_banco.py       → Banco histórico SQLite
+  agersa_dashboard.py   → Dashboard visual (Streamlit)
+  agersa_ia.py          → Relatório inteligente automático
+  agersa_agendador.py   → Agendador (roda tudo automaticamente)
+  agersa_telegram.py    → Alertas no celular via Telegram
+
+ARQUIVOS .BAT (duplo clique para executar):
+─────────────────────────────────────────────
+  INSTALAR.bat          → Instala dependências (fazer UMA vez)
+  INICIAR_AGENDADOR.bat → Inicia extração automática diária
+  INICIAR_DASHBOARD.bat → Abre dashboard no navegador
+
+COMO USAR - PASSO A PASSO:
+─────────────────────────────────────────────
+1. Execute INSTALAR.bat (apenas na primeira vez)
+
+2. Para extrair dados agora:
+   - Duplo clique em INICIAR_AGENDADOR.bat
+   - Ou rode: python agersa_sistema.py
+
+3. Para ver o dashboard:
+   - Duplo clique em INICIAR_DASHBOARD.bat
+   - Abre em: http://localhost:8501
+
+4. Para agendamento automático:
+   - Configure o horário em agersa_agendador.py
+   - HORARIOS = ["07:00"]  → roda todo dia às 7h
+   - Execute INICIAR_AGENDADOR.bat e deixe rodando
+
+PIPELINE AUTOMÁTICO:
+─────────────────────────────────────────────
+  07:00
+    → agersa_sistema.py   (extrai FlexVision → CSV → Excel)
+    → agersa_banco.py     (importa para banco histórico)
+    → agersa_ia.py        (gera relatório executivo)
+    → agersa_telegram.py  (notifica no celular)
+    → Dashboard atualizado automaticamente
+
+ARQUIVOS GERADOS (em Downloads/AGERSA/):
+─────────────────────────────────────────────
+  AGERSA_Execucao_YYYY_MM_*.xlsx  → Excel com 6 abas
+  agersa_historico.db             → Banco histórico SQLite
+  relatorio_*.txt                 → Relatório executivo
+  logs/                           → Logs de execução
+
+CONFIGURAÇÕES IMPORTANTES:
+─────────────────────────────────────────────
+  Telegram (opcional):
+    → Abra agersa_telegram.py
+    → Preencha TELEGRAM_TOKEN e TELEGRAM_CHAT_ID
+    → Instruções de configuração dentro do arquivo
+
+  IA (opcional):
+    → Obtenha chave em: console.anthropic.com
+    → set ANTHROPIC_API_KEY=sua_chave
+
+================================================
+  Desenvolvido com Claude AI - Anthropic
+  Versão: Junho/2026
+================================================
