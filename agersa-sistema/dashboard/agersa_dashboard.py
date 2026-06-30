@@ -18,8 +18,10 @@ from datetime import datetime
 # ═══════════════════════════════════════════════════════
 #  CONFIGURAÇÃO
 # ═══════════════════════════════════════════════════════
-# Usa Supabase cloud se configurado, senão SQLite local
+# Conexão: Supabase cloud (DATABASE_URL) ou SQLite local
 import os
+
+# Tenta carregar .env local se existir
 _env = Path(__file__).parent.parent / ".env"
 if _env.exists():
     for _l in _env.read_text(encoding="utf-8").splitlines():
@@ -32,9 +34,18 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "")
 BANCO_PATH   = str(Path.home() / "Downloads" / "AGERSA" / "agersa_historico.db")
 
 def get_conexao():
+    """Retorna conexão com banco — Supabase ou SQLite."""
     if DATABASE_URL:
-        import psycopg2
-        return psycopg2.connect(DATABASE_URL), "postgres"
+        try:
+            import psycopg2
+            conn = psycopg2.connect(DATABASE_URL)
+            return conn, "postgres"
+        except Exception as e:
+            st.error(f"Erro Supabase: {e}")
+            st.stop()
+    # Fallback SQLite local
+    if not Path(BANCO_PATH).exists():
+        return None, None
     import sqlite3
     conn = sqlite3.connect(BANCO_PATH)
     conn.row_factory = sqlite3.Row
@@ -105,6 +116,8 @@ st.markdown("""
 @st.cache_data(ttl=300)
 def carregar_dados(importacao_id=None):
     conn, db_tipo = get_conexao()
+    if conn is None:
+        return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), None
 
     importacoes = pd.read_sql(
         "SELECT * FROM vw_resumo_importacoes", conn)
@@ -145,7 +158,7 @@ def formatar_moeda(valor):
 with st.sidebar:
     st.markdown("### ⚙️ Configurações")
 
-    if not Path(BANCO_PATH).exists():
+    if not DATABASE_URL and not Path(BANCO_PATH).exists():
         st.error(f"Banco não encontrado:\n{BANCO_PATH}")
         st.stop()
 
