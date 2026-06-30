@@ -30,8 +30,12 @@ if _env.exists():
             _k, _v = _l.split("=", 1)
             os.environ.setdefault(_k.strip(), _v.strip())
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
+# Lê DATABASE_URL direto do ambiente (Render injeta automaticamente)
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 BANCO_PATH   = str(Path.home() / "Downloads" / "AGERSA" / "agersa_historico.db")
+
+# Debug — mostra se a variavel foi encontrada
+_tem_db = "SIM" if DATABASE_URL else "NAO"
 
 def get_conexao():
     """Retorna conexão com banco — Supabase ou SQLite."""
@@ -157,6 +161,12 @@ def formatar_moeda(valor):
 # ═══════════════════════════════════════════════════════
 with st.sidebar:
     st.markdown("### ⚙️ Configurações")
+
+    # Debug temporário
+    if DATABASE_URL:
+        st.success(f"✓ Supabase conectado")
+    else:
+        st.warning(f"DATABASE_URL não encontrada")
 
     if not DATABASE_URL and not Path(BANCO_PATH).exists():
         st.error(f"Banco não encontrado:\n{BANCO_PATH}")
